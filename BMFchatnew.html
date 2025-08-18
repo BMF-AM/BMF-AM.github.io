@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>客服聊天窗口</title>
+    <style>
+        body { 
+            font-family: Arial; 
+            text-align: center;
+            padding: 50px;
+        }
+        #loading {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>正在加载客服系统...</h1>
+    <p id="loading">如果长时间未显示，请检查网络连接</p>
+    
+    <!-- GullChat 代码 -->
+    <script id="gullchat-widget-js" 
+    src="https://code.gullchat.com/widget.js?mode=production&wid=68a2a9a61b270b61683654b9&pid=68a2a8701453bcba94a60020&fm=normal&lt=default"></script>
+    
+    <script>
+        // 检测是否加载成功
+        setTimeout(function(){
+            if(!document.querySelector('.gullchat-widget-container')){
+                document.getElementById('loading').innerHTML = '加载失败，请<a href="javascript:location.reload()">刷新页面</a>或联系客服';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
