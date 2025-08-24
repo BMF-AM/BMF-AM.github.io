@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>云策PRO1.0 周报</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2canvas for screenshot -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <style>
+        @layer utilities {
+            .glass {
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 1.5rem;
+                backdrop-filter: blur(16px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .highlight-green {
+                background: rgba(0, 255, 170, 0.15);
+            }
+            .highlight-red {
+                background: rgba(255, 0, 0, 0.15);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-gray-800 text-white min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-7xl mx-auto grid grid-cols-12 gap-6">
+        <!-- 主标题 -->
+        <div class="col-span-12 row-span-1">
+            <h1 class="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                云策PRO1.0 周报（8.18-8.22）
+            </h1>
+        </div>
+
+        <!-- 核心指标 -->
+        <div class="col-span-12 lg:col-span-6 glass p-6 flex flex-col items-center justify-center">
+            <div class="text-4xl md:text-6xl font-bold">$9,733.86 → $9,806.07</div>
+            <span class="text-gray-400 text-sm mt-2">期初/期末净值</span>
+        </div>
+        <div class="col-span-12 lg:col-span-6 glass p-6 flex flex-col items-center justify-center highlight-green">
+            <div class="text-4xl md:text-6xl font-bold text-green-400">+$72.21（+0.74%）</div>
+            <span class="text-gray-400 text-sm mt-2">周度盈亏</span>
+        </div>
+
+        <!-- 交易数据 -->
+        <div class="col-span-12 lg:col-span-4 glass p-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-chart-line text-blue-300 mr-2"></i>
+                <span class="text-gray-400 text-sm">交易</span>
+            </div>
+            <div class="text-2xl font-bold">15 笔｜73.33%｜11.33</div>
+        </div>
+        <div class="col-span-12 lg:col-span-4 glass p-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-dollar-sign text-purple-300 mr-2"></i>
+                <span class="text-gray-400 text-sm">平均盈亏</span>
+            </div>
+            <div class="text-2xl font-bold">$7.20 / $1.75</div>
+        </div>
+        <div class="col-span-12 lg:col-span-4 glass p-6 highlight-green">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-trophy text-green-300 mr-2"></i>
+                <span class="text-gray-400 text-sm">最佳/最差</span>
+            </div>
+            <div class="text-xl font-bold text-green-400">+$16.56</div>
+            <div class="text-xs text-gray-400 mt-1">Ticket 44683336</div>
+            <div class="text-xl font-bold text-red-400 mt-2">-$2.32</div>
+            <div class="text-xs text-gray-400 mt-1">Ticket 44694131</div>
+        </div>
+
+        <!-- 持仓与回撤 -->
+        <div class="col-span-12 lg:col-span-6 glass p-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-hourglass-half text-yellow-300 mr-2"></i>
+                <span class="text-gray-400 text-sm">平均/中位持仓</span>
+            </div>
+            <div class="text-2xl font-bold">186.5 分钟 / 123.2 分钟</div>
+        </div>
+        <div class="col-span-12 lg:col-span-6 glass p-6 highlight-red">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-chart-pie text-red-300 mr-2"></i>
+                <span class="text-gray-400 text-sm">最大回撤</span>
+            </div>
+            <div class="text-2xl font-bold text-red-400">$2.32（0.02%）</div>
+        </div>
+
+        <!-- 日盈亏图表 -->
+        <div class="col-span-12 glass p-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-calendar-alt text-blue-300 mr-2"></i>
+                <span class="text-gray-400 text-sm">每日盈亏</span>
+            </div>
+            <div class="h-64">
+                <canvas id="dailyProfitChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 品种信息 -->
+        <div class="col-span-12 glass p-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-coins text-purple-300 mr-2"></i>
+                <span class="text-gray-400 text-sm">交易品种</span>
+            </div>
+            <div class="text-2xl font-bold">xauusd（15 笔，+$72.21）</div>
+            <div class="mt-4 flex items-center">
+                <span class="text-gray-400 text-sm">手数：</span>
+                <div class="flex space-x-4 ml-2">
+                    <div class="w-16 text-center">0.01</div>
+                    <div class="w-16 text-center">0.014</div>
+                    <div class="w-16 text-center">0.02</div>
+                </div>
+                <span class="text-gray-400 text-sm">(最小/平均/最大)</span>
+            </div>
+        </div>
+
+        <!-- 截图按钮 -->
+        <div class="col-span-12 flex justify-center">
+            <button id="screenshotBtn" class="bg-white text-black font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition duration-300 flex items-center">
+                <i class="fas fa-camera mr-2"></i>
+                截图并下载
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 初始化日盈亏图表
+        const ctx = document.getElementById('dailyProfitChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['8/18', '8/19', '8/20', '8/21', '8/22'],
+                datasets: [{
+                    label: '每日盈亏',
+                    data: [0.00, 37.26, 0.00, 26.35, 8.60],
+                    backgroundColor: '#00f3ff',
+                    borderColor: '#00f3ff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#ffffff' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    x: {
+                        ticks: { color: '#ffffff' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // 截图功能
+        document.getElementById('screenshotBtn').addEventListener('click', () => {
+            const element = document.querySelector('body');
+            html2canvas(element).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'yunce_weekly_report.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        });
+    </script>
+</body>
+</html>
