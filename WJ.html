@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>稳健型交易周报</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2canvas -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <style>
+        @layer utilities {
+            .glass {
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 1.5rem;
+                backdrop-filter: blur(16px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .highlight-green {
+                background: rgba(0, 255, 170, 0.15);
+            }
+            .highlight-red {
+                background: rgba(255, 0, 0, 0.15);
+            }
+        }
+
+        .sub-title {
+            font-size: 1.5rem;
+            margin-top: 0.5rem;
+            color: #a0aec0;
+        }
+
+        /* 添加外层视觉容器样式 */
+        .screenshot-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            border-radius: 2rem;
+            /* 模拟更强的玻璃态外框 */
+            box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.4),
+                        0 0 0 1px rgba(255, 255, 255, 0.1);
+            background: rgba(17, 24, 39, 0.7); /* from-gray-900 半透明 */
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-gray-800 text-white min-h-screen p-6" id="body">
+    <!-- 新增：截图包裹层，包含更多视觉空间 -->
+    <div class="screenshot-wrapper" id="screenshotArea">
+        <div class="grid grid-cols-12 gap-6" id="reportContainer">
+            <!-- 主标题 -->
+            <div class="col-span-12 row-span-1">
+                <h1 class="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                    稳健型交易周报（8.18-8.22）
+                </h1>
+                <p class="sub-title">Quantitative Strategies Weekly Report</p>
+            </div>
+
+            <!-- 核心指标 -->
+            <div class="col-span-12 lg:col-span-6 glass p-6 flex flex-col items-center justify-center">
+                <div class="text-4xl md:text-6xl font-bold">$50,466.03 → $50,610.84</div>
+                <span class="text-gray-400 text-sm mt-2">期初/期末净值</span>
+            </div>
+            <div class="col-span-12 lg:col-span-6 glass p-6 flex flex-col items-center justify-center highlight-green">
+                <div class="text-4xl md:text-6xl font-bold text-green-400">+$144.81（+0.29%）</div>
+                <span class="text-gray-400 text-sm mt-2">周度盈亏</span>
+            </div>
+
+            <!-- 交易数据 -->
+            <div class="col-span-12 lg:col-span-4 glass p-6">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-chart-line text-blue-300 mr-2"></i>
+                    <span class="text-gray-400 text-sm">交易</span>
+                </div>
+                <div class="text-2xl font-bold">15 笔｜73.33%｜12.06</div>
+            </div>
+            <div class="col-span-12 lg:col-span-4 glass p-6">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-dollar-sign text-purple-300 mr-2"></i>
+                    <span class="text-gray-400 text-sm">平均盈亏</span>
+                </div>
+                <div class="text-2xl font-bold">$14.48 / $2.19</div>
+            </div>
+            <div class="col-span-12 lg:col-span-4 glass p-6 highlight-green">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-trophy text-green-300 mr-2"></i>
+                    <span class="text-gray-400 text-sm">最佳/最差</span>
+                </div>
+                <div class="text-xl font-bold text-green-400">+$32.96</div>
+                <div class="text-xs text-gray-400 mt-1">Ticket 44683369</div>
+                <div class="text-xl font-bold text-red-400 mt-2">-$4.60</div>
+                <div class="text-xs text-gray-400 mt-1">Ticket 44694127</div>
+            </div>
+
+            <!-- 持仓与回撤 -->
+            <div class="col-span-12 lg:col-span-6 glass p-6">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-hourglass-half text-yellow-300 mr-2"></i>
+                    <span class="text-gray-400 text-sm">平均/中位持仓</span>
+                </div>
+                <div class="text-2xl font-bold">232.6 分钟 / 147.4 分钟</div>
+            </div>
+            <div class="col-span-12 lg:col-span-6 glass p-6 highlight-red">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-chart-pie text-red-300 mr-2"></i>
+                    <span class="text-gray-400 text-sm">最大回撤</span>
+                </div>
+                <div class="text-2xl font-bold text-red-400">$4.60（0.009%）</div>
+            </div>
+
+            <!-- 日盈亏图表 -->
+            <div class="col-span-12 glass p-6">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-calendar-alt text-blue-300 mr-2"></i>
+                    <span class="text-gray-400 text-sm">每日盈亏</span>
+                </div>
+                <div class="h-64 relative">
+                    <canvas id="dailyProfitChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 品种信息 -->
+            <div class="col-span-12 glass p-6">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-coins text-purple-300 mr-2"></i>
+                    <span class="text-gray-400 text-sm">交易品种</span>
+                </div>
+                <div class="text-2xl font-bold">XAU/USD（15 笔，+$144.81）</div>
+                <div class="mt-4 flex items-center">
+                    <span class="text-gray-400 text-sm">手数：</span>
+                    <div class="flex space-x-4 ml-2">
+                        <div class="w-16 text-center">0.02</div>
+                        <div class="w-16 text-center">0.028</div>
+                        <div class="w-16 text-center">0.04</div>
+                    </div>
+                    <span class="text-gray-400 text-sm">(最小/平均/最大)</span>
+                </div>
+            </div>
+
+            <!-- 截图按钮 -->
+            <div class="col-span-12 flex justify-center">
+                <button id="screenshotBtn" class="bg-white text-black font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition duration-300 flex items-center">
+                    <i class="fas fa-camera mr-2"></i>
+                    截图并下载
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化图表
+        const ctx = document.getElementById('dailyProfitChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['8/18', '8/19', '8/20', '8/21', '8/22'],
+                datasets: [{
+                    label: '每日盈亏',
+                    data: [0.00, 74.54, 0.00, 52.96, 17.38],
+                    backgroundColor: '#00f3ff',
+                    borderColor: '#00f3ff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#ffffff' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    x: {
+                        ticks: { color: '#ffffff' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // 截图功能
+        document.getElementById('screenshotBtn').addEventListener('click', () => {
+            const container = document.getElementById('screenshotArea'); // 捕获外层容器
+
+            setTimeout(() => {
+                html2canvas(container, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: null, // 透明背景，保留原始样式
+                    scrollX: 0,
+                    scrollY: 0,
+                    width: container.scrollWidth,
+                    height: container.scrollHeight,
+                    // 关键：包含外层 padding 和阴影
+                    logging: false,
+                    proxy: null,
+                    // 保持高分辨率
+                    imageTimeout: 15000
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = '稳健型交易周报_完整截图.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                }).catch(err => {
+                    console.error('截图失败:', err);
+                    alert('截图失败，请稍后再试。');
+                });
+            }, 600); // 延迟稍长，确保图表和阴影完全渲染
+        });
+    </script>
+</body>
+</html>
